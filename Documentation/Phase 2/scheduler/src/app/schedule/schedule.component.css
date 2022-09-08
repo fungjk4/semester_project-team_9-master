@@ -1,0 +1,15 @@
+.navlinks {
+  text-decoration: none;
+  color: black;
+}
+
+#scheduler {
+  color: white !important;
+}
+
+.calenderHolder {
+  margin-left: auto;
+  margin-right: auto;
+  width: 80%;
+  margin-top: 3rem;
+}

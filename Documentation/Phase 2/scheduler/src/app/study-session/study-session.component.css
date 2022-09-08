@@ -1,0 +1,138 @@
+.title {
+  margin-left: auto;
+  margin-right: auto;
+  width: 80%;
+  margin-top: 3rem;
+}
+
+.navlinks {
+  text-decoration: none;
+  color: black;
+}
+
+#scheduler {
+  color: white !important;
+}
+
+.upcomingss {
+  font-family: 'Bebas Neue', cursive;
+  font-size: 3rem;
+}
+
+#sstable {
+  margin-left: auto;
+  margin-right: auto;
+  width: 100%;
+  margin-top: 5px;
+}
+
+tr.example-detail-row {
+  height: 0;
+}
+
+tr.example-element-row:not(.example-expanded-row):hover {
+  background: whitesmoke;
+}
+
+tr.example-element-row:not(.example-expanded-row):active {
+  background: #efefef;
+}
+
+.example-element-row td {
+  border-bottom-width: 0;
+}
+
+.example-element-detail {
+  overflow: hidden;
+  display: flex;
+}
+
+.example-element-diagram {
+  min-width: 80px;
+  border: 2px solid black;
+  padding: 8px;
+  font-weight: lighter;
+  margin: 8px 0;
+  height: 104px;
+}
+
+.example-element-symbol {
+  font-weight: bold;
+  font-size: 40px;
+  line-height: normal;
+}
+
+.example-element-description {
+  padding: 16px;
+}
+
+.example-element-description-attribution {
+  opacity: 0.5;
+}
+
+.classInfo {
+  display: flex;
+  flex-wrap: wrap;
+  width: 100%;
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+
+.sessionInfo {
+  width: 50%;
+  border-top: 0px;
+  border-left: 0px;
+  border-right: 0px;
+  border-bottom: 1px;
+  border-style: dashed;
+  margin-top: 1rem;
+}
+
+.study_session_title {
+  width: 100%;
+}
+
+.addAssignment {
+  float: right;
+  margin-top: 1rem;
+  margin-right: 0.5rem;
+  clear: both;
+  padding-left: 0;
+  padding-right: 0;
+}
+
+.addSSButton {
+  float: right;
+  margin-top: 1rem;
+  margin-right: 0.5rem;
+  clear: both;
+}
+
+.assignmentForm {
+  background-color: #FAF9F6;
+  border: solid;
+  border-radius: 5px;
+  padding: 1rem;
+  margin-top: 1rem;
+  display: none;
+}
+
+.assignmentPara {
+  margin-right: 5px;
+}
+
+.aFormDiv {
+  width: 33%;
+}
+
+.addSS {
+  width: 80%;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.tabs {
+  margin-left: auto;
+  margin-right: auto;
+  width: 80%;
+}

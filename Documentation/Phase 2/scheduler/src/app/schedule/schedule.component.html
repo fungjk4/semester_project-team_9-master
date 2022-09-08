@@ -1,0 +1,20 @@
+<p>
+  <mat-toolbar color="primary">
+    <button mat-icon-button class="example-icon" [matMenuTriggerFor]="menu" aria-label="Example icon-button with menu icon">
+      <mat-icon>menu</mat-icon>
+    </button>
+    <mat-menu #menu="matMenu">
+      <div *ngIf="teacher == false"><button mat-menu-item id="student"><a [routerLink]="['/information']" class="navlinks">Course Information</a></button></div>
+      <div *ngIf="teacher == true"><button mat-menu-item id="teacher"><a [routerLink]="['/teacherInformation']" class="navlinks">Teacher Information</a></button></div>
+      <div *ngIf="ta == true"><button mat-menu-item id="student"><a [routerLink]="['/information']" class="navlinks">Course Information</a></button></div>
+      <button mat-menu-item><a [routerLink]="['/study-session']" class="navlinks">Study Sessions</a></button>
+      <button mat-menu-item><a [routerLink]="['']" class="navlinks">Sign Out</a></button>
+    </mat-menu>
+    <span><a [routerLink]="['/schedule']" class="navlinks" id="scheduler">Scheduler</a></span>
+    <span class="example-spacer"></span>
+  </mat-toolbar>
+</p>
+
+<div class="calenderHolder" style="border-style: double;">
+  <div id="calendar"></div>
+</div>

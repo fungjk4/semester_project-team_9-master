@@ -1,0 +1,16 @@
+<div class="login">
+  <header class="loginContainer">
+    <div class="loginText">Login</div>
+    <div class="userLogin">
+      <p class="emailText">Email</p>
+      <div class="fieldContainer">
+      <mat-form-field appearance="fill" id="field">
+        <mat-label>Enter your email</mat-label>
+        <input matInput placeholder="pat@example.com" [formControl]="email" required>
+        <mat-error *ngIf="email.invalid">{{getErrorMessage()}}</mat-error>
+      </mat-form-field></div>
+      <div class="submitContainer"><button mat-raised-button color="primary" class="submit" (click)="onSubmit()">Submit</button></div>
+      <div class="errorContainer" id="appearError"><p class="errorEmail">*Invalid Email or Unknown Email</p></div>
+    </div>
+  </header>
+</div>

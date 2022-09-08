@@ -1,0 +1,137 @@
+.example-spacer {
+  flex: 1 1 auto;
+}
+
+.navlinks {
+  text-decoration: none;
+  color: black;
+}
+
+#scheduler {
+  color: white !important;
+}
+
+.title {
+  margin-left: auto;
+  margin-right: auto;
+  width: 80%;
+  margin-top: 3rem;
+}
+
+
+.cinfo {
+  font-family: 'Bebas Neue', cursive;
+  font-size: 3rem;
+}
+
+.tabs {
+  margin-left: auto;
+  margin-right: auto;
+  width: 80%;
+}
+
+table {
+  width: 100%;
+}
+
+tr.example-detail-row {
+  height: 0;
+}
+
+tr.example-element-row:not(.example-expanded-row):hover {
+  background: whitesmoke;
+}
+
+tr.example-element-row:not(.example-expanded-row):active {
+  background: #efefef;
+}
+
+.example-element-row td {
+  border-bottom-width: 0;
+}
+
+.example-element-detail {
+  overflow: hidden;
+  display: flex;
+}
+
+.example-element-diagram {
+  min-width: 80px;
+  border: 2px solid black;
+  padding: 8px;
+  font-weight: lighter;
+  margin: 8px 0;
+  height: 104px;
+}
+
+.example-element-symbol {
+  font-weight: bold;
+  font-size: 40px;
+  line-height: normal;
+}
+
+.example-element-description {
+  padding: 16px;
+}
+
+.example-element-description-attribution {
+  opacity: 0.5;
+}
+
+.classInfo {
+  display: flex;
+  flex-wrap: wrap;
+  width: 100%;
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+
+.professorInfo {
+  width: 50%;
+}
+
+.officeHoursInfo {
+  width: 50%;
+}
+
+.taInfo {
+  width: 50%;
+  display: block;
+}
+
+.assignmentId {
+  width: 100%;
+}
+
+.assignmentDue {
+  width: 50%;
+}
+
+.gradeInfo {
+  width: 100%;
+}
+
+.assignmentDue {
+  width: 100%;
+}
+
+.formContainer {
+  display: block;
+  border-radius: 4px;
+  border: solid;
+  padding: 1rem;
+  margin-top: 0.5rem;
+}
+
+.scrollable {
+  height: 70vh;
+  overflow-y: scroll;
+}
+
+.scrollable::-webkit-scrollbar {
+  display: none;
+}
+
+.queryFormField {
+  margin-right: 1rem;
+}

@@ -1,0 +1,499 @@
+<p>
+  <mat-toolbar color="primary">
+    <button mat-icon-button class="example-icon" [matMenuTriggerFor]="menu" aria-label="Example icon-button with menu icon">
+      <mat-icon>menu</mat-icon>
+    </button>
+    <mat-menu #menu="matMenu">
+      <div *ngIf="isUserTA == true"><button mat-menu-item id="student"><a [routerLink]="['/information']" class="navlinks">Course Information</a></button></div>
+      <button mat-menu-item><a [routerLink]="['/schedule']" class="navlinks">Schedule</a></button>
+      <button mat-menu-item><a [routerLink]="['/study-session']" class="navlinks">Study Sessions</a></button>
+      <button mat-menu-item><a [routerLink]="['']" class="navlinks">Sign Out</a></button>
+    </mat-menu>
+    <span><a [routerLink]="['/schedule']" class="navlinks" id="scheduler">Scheduler</a></span>
+    <span class="example-spacer"></span>
+  </mat-toolbar>
+</p>
+
+<div class="title"><h1 class="cinfo">Course Information</h1></div>
+<mat-tab-group class="tabs" color="accent" backgroundColor="primary">
+  <mat-tab label="Course Overview">
+    <table mat-table
+       [dataSource]="dataSource" #teacherCourse multiTemplateDataRows
+       class="mat-elevation-z8">
+      <ng-container matColumnDef="{{column}}" *ngFor="let column of columnsToDisplay">
+        <th mat-header-cell *matHeaderCellDef> {{column}} </th>
+        <td mat-cell *matCellDef="let element"> <b>{{element[column]}}</b> </td>
+      </ng-container>
+
+      <!-- Expanded Content Column - The detail row is made up of this one column that spans across all columns -->
+      <ng-container matColumnDef="expandedDetail">
+        <td mat-cell *matCellDef="let element" [attr.colspan]="columnsToDisplay.length">
+          <div class="example-element-detail"
+              [@detailExpand]="element == expandedElement ? 'expanded' : 'collapsed'">
+            <div class="classInfo">
+              <div class="professorInfo">
+                <h3><small>Instructor:</small> {{element.professorName}}</h3>
+                <h4><small>Email:</small> {{element.professorEmail}}</h4>
+              </div>
+              <div class="officeHoursInfo" *ngFor="let office of element.officeHours">
+                <h3><small>Office Hours:</small> {{office}}</h3><br>
+              </div>
+              <div class="taInfo" *ngFor="let currTa of element.taName">
+                <h3><small>Teacher Assistant:</small> {{currTa}}</h3>
+              </div>
+              <div class="taInfo" *ngFor="let currTaEmail of element.taEmail">
+                <h4><small>Email:</small> {{currTaEmail}}</h4>
+              </div>
+            </div>
+          </div>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="columnsToDisplay"></tr>
+      <tr mat-row *matRowDef="let element; columns: columnsToDisplay;"
+        class="example-element-row"
+        [class.example-expanded-row]="expandedElement === element"
+        (click)="expandedElement = expandedElement === element ? null : element">
+      </tr>
+      <tr mat-row *matRowDef="let row; columns: ['expandedDetail']" class="example-detail-row"></tr>
+    </table>
+    <div class="assignmentForm" id="formCourseInfo">
+      <button style="float:right;" id="exit" (click)="exitEditCourse()">x</button><br>
+      <div style="display: flex;">
+        <div class="aFormDiv"><p class="assignmentPara">Course:</p>
+        <input matInput placeholder="CMSC255" [formControl]="courseInformation" required></div>
+        <div class="aFormDiv"><p>Office Hours:</p>
+        <input matInput placeholder="12:00:00-13:00:00" [formControl]="officeHours" required></div>
+        <button mat-raised-button color="primary" class="addAssignment" (click)="editCourseInformation()">Submit</button>
+      </div>
+      <p style="color: red; display: none;" id="warningEditOH">The course name or office hours is not recognized.</p>
+    </div>
+    <button mat-raised-button color="primary" class="addAssignment" (click)="displayEditOHForm()" id="addEditOHButton">Edit Office Hours</button>
+  </mat-tab>
+  <mat-tab label="Assignments">
+    <table mat-table
+       [dataSource]="dataAssignment" #teacherAssignment multiTemplateDataRows
+       class="mat-elevation-z8">
+      <ng-container matColumnDef="{{column}}" *ngFor="let column of columnsToDisplay">
+        <th mat-header-cell *matHeaderCellDef> {{column}} </th>
+        <td mat-cell *matCellDef="let element"> <b>{{element[column]}}</b> </td>
+      </ng-container>
+
+      <!-- Expanded Content Column - The detail row is made up of this one column that spans across all columns -->
+      <ng-container matColumnDef="expandedDetail">
+        <td mat-cell *matCellDef="let element" [attr.colspan]="columnsToDisplay.length">
+          <div class="example-element-detail"
+              [@detailExpand]="element == expandedCourseAssignments ? 'expanded' : 'collapsed'">
+            <div class="classInfo">
+              <div class="assignmentId" *ngFor="let assignment of element.assignment">
+                <h3><small>Assignment:</small> {{assignment}}</h3>
+              </div>
+            </div>
+            <div class="classInfo">
+              <div class="assignmentDue" *ngFor="let date of element.dueDate">
+                <div class="singleDate"><h3><small>Assignment Due Date:</small> {{date}}</h3></div>
+              </div>
+            </div>
+          </div>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="columnsToDisplay"></tr>
+      <tr mat-row *matRowDef="let element; columns: columnsToDisplay;"
+        class="example-element-row"
+        [class.example-expanded-row]="expandedCourseAssignments === element"
+        (click)="expandedCourseAssignments = expandedCourseAssignments === element ? null : element">
+      </tr>
+      <tr mat-row *matRowDef="let row; columns: ['expandedDetail']" class="example-detail-row"></tr>
+    </table>
+    <div class="assignmentForm" id="formAssign">
+      <button style="float:right;" id="exit" (click)="exitAddAssignment()">x</button><br>
+      <div style="display: flex;">
+        <div class="aFormDiv"><p class="assignmentPara">Course-Section:</p>
+        <input matInput placeholder="CMSC255-001" [formControl]="course" required></div>
+        <div class="aFormDiv"><p>Assignment:</p>
+        <input matInput placeholder="000001-Project 1-Phase 1" [formControl]="assignmentId" required></div>
+        <div class="aFormDiv"><p>Due Date</p>
+        <input matInput placeholder="YYYY-MM-DD 00:00" [formControl]="assignmentDue" required></div>
+        <button mat-raised-button color="primary" class="addAssignment" (click)="addAssignment()">Submit</button>
+        <button mat-raised-button color="primary" class="addAssignment" (click)="deleteAssignment()">Remove</button>
+      </div>
+      <p style="color: red; display: none;" id="warningAssignment">The course or Assignment ID are not recognized.</p>
+      <p style="color: red; display: none; margin-top: 1rem;" id="warningDeleteAssignment">The combination of inputs does not exist in Assignments</p>
+    </div>
+    <button mat-raised-button color="primary" class="addAssignment" (click)="displayNewAssignForm()" id="addAssignButton">Add/Edit/Delete Assignment</button>
+  </mat-tab>
+  <mat-tab label="Grades">
+    <table mat-table
+       [dataSource]="dataGrade" #teacherGrade multiTemplateDataRows
+       class="mat-elevation-z8">
+      <ng-container matColumnDef="{{column}}" *ngFor="let column of columnsToDisplay">
+        <th mat-header-cell *matHeaderCellDef> {{column}} </th>
+        <td mat-cell *matCellDef="let element"> <b>{{element[column]}}</b> </td>
+      </ng-container>
+
+      <!-- Expanded Content Column - The detail row is made up of this one column that spans across all columns -->
+      <ng-container matColumnDef="expandedDetail">
+        <td mat-cell *matCellDef="let element" [attr.colspan]="columnsToDisplay.length">
+          <div class="example-element-detail"
+              [@detailExpand]="element == expandedGrade ? 'expanded' : 'collapsed'">
+            <div class="classInfo">
+              <div class="gradeInfo" *ngFor="let student of element.grade">
+                <h3 style="float: left;"><small>Student Email:</small> <strong> {{student[0]}}</strong></h3>
+                <h3 style="float: right"><small>Overall Grade:</small> <strong> {{student[1]}}</strong></h3>
+              </div>
+            </div>
+          </div>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="columnsToDisplay"></tr>
+      <tr mat-row *matRowDef="let element; columns: columnsToDisplay;"
+        class="example-element-row"
+        [class.example-expanded-row]="expandedGrade === element"
+        (click)="expandedGrade = expandedGrade === element ? null : element">
+      </tr>
+      <tr mat-row *matRowDef="let row; columns: ['expandedDetail']" class="example-detail-row"></tr>
+    </table>
+    <div class="assignmentForm" id="formGrade">
+      <button style="float:right;" id="exitGrade" (click)="exitEditStudent()">x</button><br>
+      <div style="display: flex;">
+        <div class="aFormDiv"><p class="assignmentPara">Course:</p>
+        <input matInput placeholder="CMSC255-001" [formControl]="course_grade" required></div>
+        <div class="aFormDiv"><p class="assignmentPara">Student Name:</p>
+        <input matInput placeholder="pat@example.com" [formControl]="studentInputName" required></div>
+        <div class="aFormDiv"><p>Grade:</p>
+        <input matInput placeholder="00" [formControl]="student_grade" required></div>
+        <button mat-raised-button color="primary" class="addAssignment" (click)="editStudentGrade()">Submit</button>
+      </div>
+      <p style="color: red; display: none;" id="warningStudent">The Student Name is not recognized.</p>
+    </div>
+    <button mat-raised-button color="primary" class="addAssignment" (click)="displayEditStudentForm()" id="editGradeButton">Edit Student Grade</button>
+  </mat-tab>
+  <mat-tab label="Form" style="overflow-y: scroll;"><div class="scrollable">
+    <div class="formContainer">
+      <div class="queryName" style="width: 100%;"><h2>Are the TA's study Sessions Benefiting Students</h2></div>
+      <mat-form-field appearance="fill" id="queryOne">
+        <mat-label>Email</mat-label>
+        <input matInput placeholder="pat@example.com" [formControl]="oneEmail" required>
+        <mat-error *ngIf="oneEmail.invalid">{{getErrorMessage(oneEmail)}}</mat-error>
+      </mat-form-field>
+      <mat-form-field appearance="fill" id="queryOne">
+        <mat-label>Course ID</mat-label>
+        <input matInput placeholder="CMSC508" [formControl]="oneCourse" required>
+        <mat-error *ngIf="oneCourse.invalid">{{getErrorMessage(oneCourse)}}</mat-error>
+      </mat-form-field><br>
+      <button mat-raised-button color="primary" id="queryOneButton" (click)="queryOne()">Submit</button>
+      <div style="width: 100%; display: flex;"><div *ngFor="let studySession of oneResults" style="width: 50%; margin-top: 1rem;">
+        <p>Average Grade With Study Sessions: {{studySession.avg_no_study_session_grade}}</p>
+        <p>Average Grade Without Study Sessions: {{studySession.avg_study_session_grade}}</p>
+      </div></div>
+    </div>
+    <div class="formContainer">
+      <div class="queryName" style="width: 100%;"><h2>How many sections are there of Course C?</h2></div>
+      <mat-form-field appearance="fill" id="queryTwo" class="queryFormField">
+        <mat-label>Course ID</mat-label>
+        <input matInput placeholder="CMSC 508" [formControl]="twoCourse" required>
+        <mat-error *ngIf="twoCourse.invalid">{{getErrorMessage(twoCourse)}}</mat-error>
+      </mat-form-field><br>
+      <button mat-raised-button color="primary" id="queryTwoButton" (click)="queryTwo()">Submit</button><br>
+      <p id="numSections" style="display: none; margin-top: 0.5rem;"><strong>Number of Sections: {{queryTwoNumSections}}</strong></p>
+    </div>
+    <div class="formContainer">
+      <div class="queryName" style="width: 100%;"><h2>How many hours has a TA worked this week?</h2></div>
+      <mat-form-field appearance="fill" id="queryFour" class="queryFormField">
+        <mat-label>Email</mat-label>
+        <input matInput placeholder="pat@example.com" [formControl]="fourEmail" required>
+        <mat-error *ngIf="fourEmail.invalid">{{getErrorMessage(fourEmail)}}</mat-error>
+      </mat-form-field><br>
+      <button mat-raised-button color="primary" id="queryFourButton" (click)="queryFour()">Submit</button>
+      <p id="numTaHoursWorked" style="display: none; margin-top: 0.5rem;"><strong>Number of Hours Worked: {{fourHoursWorked}}</strong></p>
+    </div>
+    <div class="formContainer">
+      <div class="queryName" style="width: 100%;"><h2>What are all the assignments for Course C that have a study session?</h2></div>
+      <mat-form-field appearance="fill" id="queryFive" class="queryFormField">
+        <mat-label>Course ID</mat-label>
+        <input matInput placeholder="CMSC 255" [formControl]="fiveCourse" required>
+        <mat-error *ngIf="fiveCourse.invalid">{{getErrorMessage(fiveCourse)}}</mat-error>
+      </mat-form-field><br>
+      <button mat-raised-button color="primary" id="queryFiveButton" (click)="queryFive()">Submit</button>
+      <div style="width: 100%; display: flex; flex-wrap: wrap;"><div *ngFor="let assignments of fiveResults" style="width: 50%; margin-top: 1rem;">
+        <p>Assignment Id: {{assignments.assignment_id}}</p>
+        <p>Description: {{assignments.description}}</p>
+        <p>Assignment Due Date: {{assignments.assignment_due_date}}</p>
+        <p>Location of Study Session: {{assignments.location}}</p>
+        <p>Date: {{assignments.study_session_date}}</p>
+        <p>Start Time: {{assignments.study_session_start_time}}</p>
+      </div></div>
+    </div>
+    <div class="formContainer">
+      <div class="queryName" style="width: 100%;"><h2>Find all the study sessions of a specific modality for Course C this week</h2></div>
+      <mat-form-field appearance="fill" id="querySix" class="queryFormField">
+        <mat-label>Course Name</mat-label>
+        <input matInput placeholder="CMSC 255" [formControl]="sixCourse" required>
+        <mat-error *ngIf="sixCourse.invalid">{{getErrorMessage(sixCourse)}}</mat-error>
+      </mat-form-field>
+      <mat-form-field appearance="fill" id="querySix" class="queryFormField">
+        <mat-label>Modality</mat-label>
+        <input matInput placeholder="Online" [formControl]="sixModality" required>
+        <mat-error *ngIf="sixModality.invalid">{{getErrorMessage(sixModality)}}</mat-error>
+      </mat-form-field><br>
+      <button mat-raised-button color="primary" id="querySixButton" (click)="querySix()">Submit</button>
+      <div style="width: 100%; display: flex; flex-wrap: wrap;"><div *ngFor="let studySession of sixResults" style="width: 50%; margin-top: 1rem;">
+        <p>Date: {{studySession.date}}</p>
+        <p>Location: {{studySession.location}}</p>
+        <p>Start Time: {{studySession.start_time}}</p>
+        <p>End Time: {{studySession.end_time}}</p>
+      </div></div>
+    </div>
+    <div class="formContainer">
+      <div class="queryName" style="width: 100%;"><h2>Does Professor P need to curve course grades for courses they're teaching?</h2></div>
+      <mat-form-field appearance="fill" id="querySeven">
+        <mat-label>Email</mat-label>
+        <input matInput placeholder="pat@example.com" [formControl]="sevenEmail" required>
+        <mat-error *ngIf="sevenEmail.invalid">{{getErrorMessage(sevenEmail)}}</mat-error>
+      </mat-form-field><br>
+      <button mat-raised-button color="primary" id="querySevenButton" (click)="querySeven()">Submit</button>
+      <div style="width: 100%; display: flex; flex-wrap: wrap;"><div *ngFor="let teach of sevenResults" style="width: 50%; margin-top: 1.5rem;">
+        <p>Course: {{teach.course_id}}</p>
+        <p>Average Grade: {{teach.avg_grade}}</p>
+      </div></div>
+    </div>
+    <div class="formContainer">
+      <div class="queryName" style="width: 100%;"><h2>Which students are suitable candidates to be a TA based on their course grade?</h2></div>
+      <mat-form-field appearance="fill" id="queryEight" class="queryFormField">
+        <mat-label>Course</mat-label>
+        <input matInput placeholder="Course 255" [formControl]="eightCourse" required>
+        <mat-error *ngIf="eightCourse.invalid">{{getErrorMessage(eightCourse)}}</mat-error>
+      </mat-form-field><br>
+      <button mat-raised-button color="primary" id="queryEightButton" (click)="queryEight()">Submit</button>
+      <div style="width: 100%; display: flex; flex-wrap: wrap;"><div *ngFor="let students of eightResults" style="width: 50%; margin-top: 1.5rem;">
+        <p>Student Email: {{students.email}}</p>
+        <p>Grade: {{students.grade}}</p>
+      </div></div>
+    </div>
+    <div class="formContainer">
+      <div class="queryName" style="width: 100%;"><h2>With an assignment due date approaching, should a professor P create more study sessions?</h2></div>
+      <button mat-raised-button color="primary" id="queryNineButton" (click)="queryNine()">Run Query 9</button>
+      <div style="width: 100%; display: flex; flex-wrap: wrap;"><div *ngFor="let assignment of nineResults" style="width: 50%; margin-top: 1.5rem;">
+        <p>Assignment ID: {{assignment.assignment_id}}</p>
+        <p>Assignment Description: {{assignment.description}}</p>
+        <p>Due Date: {{assignment.due_date}}</p>
+        <p>Number of remaining Study Sessions: {{assignment.number_of_remaining_sessions}}</p>
+      </div></div>
+    </div>
+    <div class="formContainer">
+      <div class="queryName" style="width: 100%;"><h2>What times are students not avaliable to work on Assignment A together?</h2></div>
+      <mat-form-field appearance="fill" id="queryTen" class="queryFormField">
+        <mat-label>Email 1</mat-label>
+        <input matInput placeholder="joe@example.com" [formControl]="tenEmailOne" required>
+        <mat-error *ngIf="tenEmailOne.invalid">{{getErrorMessage(tenEmailOne)}}</mat-error>
+      </mat-form-field>
+      <mat-form-field appearance="fill" id="queryTen" class="queryFormField">
+        <mat-label>Email 2</mat-label>
+        <input matInput placeholder="mama@example.com" [formControl]="tenEmailTwo" required>
+        <mat-error *ngIf="tenEmailTwo.invalid">{{getErrorMessage(tenEmailTwo)}}</mat-error>
+      </mat-form-field>
+      <mat-form-field appearance="fill" id="queryTen" class="queryFormField">
+        <mat-label>Email 3</mat-label>
+        <input matInput placeholder="hugh@example.com" [formControl]="tenEmailThree" required>
+        <mat-error *ngIf="tenEmailThree.invalid">{{getErrorMessage(tenEmailThree)}}</mat-error>
+      </mat-form-field><br>
+      <button mat-raised-button color="primary" id="queryTenButton" (click)="queryTen()">Submit</button>
+      <div style="width: 100%; display: flex; flex-wrap: wrap;"><div *ngFor="let events of tenResults" style="width: 50%; margin-top: 1rem;">
+        <p>Date: {{events.date}}</p>
+        <p>Time: {{events.start_time}}-{{events.end_time}}</p>
+      </div></div>
+    </div>
+    <div class="formContainer">
+      <div class="queryName" style="width: 100%;"><h2>Based on the current course grades and number of study sessions, should there be more study sessions pertaining to course C the upcoming semester?</h2></div>
+      <mat-form-field appearance="fill" id="queryEleven" class="queryFormField">
+        <mat-label>Course ID</mat-label>
+        <input matInput placeholder="CMSC 255" [formControl]="elevenCourse" required>
+        <mat-error *ngIf="elevenCourse.invalid">{{getErrorMessage(elevenCourse)}}</mat-error>
+      </mat-form-field>
+      <mat-form-field appearance="fill" id="queryEleven" class="queryFormField">
+        <mat-label>Section ID</mat-label>
+        <input matInput placeholder="001" [formControl]="elevenSection" required>
+        <mat-error *ngIf="elevenSection.invalid">{{getErrorMessage(elevenSection)}}</mat-error>
+      </mat-form-field>
+      <mat-form-field appearance="fill" id="queryEleven" class="queryFormField">
+        <mat-label>Semester</mat-label>
+        <input matInput placeholder="Fall" [formControl]="elevenSemester" required>
+        <mat-error *ngIf="tenEmailThree.invalid">{{getErrorMessage(tenEmailThree)}}</mat-error>
+      </mat-form-field>
+      <mat-form-field appearance="fill" id="queryEleven" class="queryFormField">
+        <mat-label>Year</mat-label>
+        <input matInput placeholder="2021" [formControl]="elevenYear" required>
+        <mat-error *ngIf="elevenYear.invalid">{{getErrorMessage(elevenYear)}}</mat-error>
+      </mat-form-field><br>
+      <button mat-raised-button color="primary" id="queryElevenButton" (click)="queryEleven()">Submit</button>
+      <div style="width: 100%; display: flex; flex-wrap: wrap;"><div *ngFor="let currentGrade of elevenResults" style="width: 50%; margin-top: 1.5rem;">
+        <p>Average Grade in Class: {{currentGrade.avg_course_grade}}</p>
+        <p>Number of Study Sessions: {{currentGrade.num_study_sessions}}</p>
+      </div></div>
+    </div>
+    <div class="formContainer">
+      <div class="queryName" style="width: 100%;"><h2>How can a student contact a TA for a course?</h2></div>
+      <mat-form-field appearance="fill" id="queryTwelve" class="queryFormField">
+        <mat-label>Email</mat-label>
+        <input matInput placeholder="pat@example.com" [formControl]="twelveEmail" required>
+        <mat-error *ngIf="twelveEmail.invalid">{{getErrorMessage(twelveEmail)}}</mat-error>
+      </mat-form-field>
+      <mat-form-field appearance="fill" id="queryTwelve" class="queryFormField">
+        <mat-label>Course ID</mat-label>
+        <input matInput placeholder="CMSC 508" [formControl]="twelveCourse" required>
+        <mat-error *ngIf="twelveCourse.invalid">{{getErrorMessage(twelveCourse)}}</mat-error>
+      </mat-form-field>
+      <mat-form-field appearance="fill" id="queryTwelve" class="queryFormField">
+        <mat-label>Section ID</mat-label>
+        <input matInput placeholder="001" [formControl]="twelveSection" required>
+        <mat-error *ngIf="twelveSection.invalid">{{getErrorMessage(twelveSection)}}</mat-error>
+      </mat-form-field>
+      <mat-form-field appearance="fill" id="queryTwelve" class="queryFormField">
+        <mat-label>Semester</mat-label>
+        <input matInput placeholder="Fall" [formControl]="twelveSemester" required>
+        <mat-error *ngIf="twelveSemester.invalid">{{getErrorMessage(twelveSemester)}}</mat-error>
+      </mat-form-field>
+      <mat-form-field appearance="fill" id="queryTwelve" class="queryFormField">
+        <mat-label>Year</mat-label>
+        <input matInput placeholder="2021" [formControl]="twelveYear" required>
+        <mat-error *ngIf="twelveYear.invalid">{{getErrorMessage(twelveYear)}}</mat-error>
+      </mat-form-field><br>
+      <button mat-raised-button color="primary" id="queryTwelveButton" (click)="queryTwelve()">Submit</button>
+      <div style="width: 100%; display: flex; flex-wrap: wrap;"><div *ngFor="let taContact of twelveResults" style="width: 50%; margin-top: 1.5rem;">
+        <p>TA Email: {{taContact.ta_email}}</p>
+      </div></div>
+    </div>
+    <div class="formContainer">
+      <div class="queryName" style="width: 100%;"><h2>When does a professor have office hours?</h2></div>
+      <mat-form-field appearance="fill" id="queryThirteen" class="queryFormField">
+        <mat-label>Course</mat-label>
+        <input matInput placeholder="Course 255" [formControl]="thirteenCourse" required>
+        <mat-error *ngIf="thirteenCourse.invalid">{{getErrorMessage(thirteenCourse)}}</mat-error>
+      </mat-form-field>
+      <mat-form-field appearance="fill" id="queryThirteen" class="queryFormField">
+        <mat-label>Section</mat-label>
+        <input matInput placeholder="001" [formControl]="thirteenSection" required>
+        <mat-error *ngIf="thirteenSection.invalid">{{getErrorMessage(thirteenSection)}}</mat-error>
+      </mat-form-field>
+      <mat-form-field appearance="fill" id="queryThirteen" class="queryFormField">
+        <mat-label>Semester</mat-label>
+        <input matInput placeholder="Fall" [formControl]="thirteenSemester" required>
+        <mat-error *ngIf="thirteenSemester.invalid">{{getErrorMessage(thirteenSemester)}}</mat-error>
+      </mat-form-field>
+      <mat-form-field appearance="fill" id="queryThirteen" class="queryFormField">
+        <mat-label>Year</mat-label>
+        <input matInput placeholder="2021" [formControl]="thirteenYear" required>
+        <mat-error *ngIf="thirteenYear.invalid">{{getErrorMessage(thirteenYear)}}</mat-error>
+      </mat-form-field><br>
+      <button mat-raised-button color="primary" id="queryThirteenButton" (click)="queryThirteen()">Submit</button>
+      <div style="width: 100%; display: flex; flex-wrap: wrap;"><div *ngFor="let officeHours of thirteenResults" style="width: 50%; margin-top: 1.5rem;">
+        <p>Mode: {{officeHours.mode}}</p>
+        <p>Location: {{officeHours.location}}</p>
+        <p>Time: {{officeHours.day}} {{officeHours.start_time}}-{{officeHours.end_time}}</p>
+      </div></div>
+    </div>
+    <div class="formContainer">
+      <div class="queryName" style="width: 100%;"><h2>How many sessions has Student S attended?</h2></div>
+      <mat-form-field appearance="fill" id="queryFourteen" class="queryFormField">
+        <mat-label>Email</mat-label>
+        <input matInput placeholder="pat@example.com" [formControl]="fourteenEmail" required>
+        <mat-error *ngIf="fourteenEmail.invalid">{{getErrorMessage(fourteenEmail)}}</mat-error>
+      </mat-form-field><br>
+      <button mat-raised-button color="primary" id="queryFourteenButton" (click)="queryFourteen()">Submit</button>
+      <p id="attendedSSFourteen" style="display: none; margin-top: 0.5rem;"><strong>Study Sessions Attended: {{fourteenSSAttended}}</strong></p>
+    </div>
+    <div class="formContainer">
+      <div class="queryName" style="width: 100%;"><h2>If a TA is hosting a study session for course C at time T, how many students would be able to attend?</h2></div>
+      <mat-form-field appearance="fill" id="queryFifteen" class="queryFormField">
+        <mat-label>Course</mat-label>
+        <input matInput placeholder="Course 255" [formControl]="fifteenCourse" required>
+        <mat-error *ngIf="fifteenCourse.invalid">{{getErrorMessage(fifteenCourse)}}</mat-error>
+      </mat-form-field>
+      <mat-form-field appearance="fill" id="queryFifteen" class="queryFormField">
+        <mat-label>Section</mat-label>
+        <input matInput placeholder="001" [formControl]="fifteenSection" required>
+        <mat-error *ngIf="fifteenSection.invalid">{{getErrorMessage(fifteenSection)}}</mat-error>
+      </mat-form-field>
+      <mat-form-field appearance="fill" id="queryFifteen" class="queryFormField">
+        <mat-label>Semester</mat-label>
+        <input matInput placeholder="Fall" [formControl]="fifteenSemester" required>
+        <mat-error *ngIf="fifteenSemester.invalid">{{getErrorMessage(fifteenSemester)}}</mat-error>
+      </mat-form-field>
+      <mat-form-field appearance="fill" id="queryFifteen" class="queryFormField">
+        <mat-label>Year</mat-label>
+        <input matInput placeholder="2021" [formControl]="fifteenYear" required>
+        <mat-error *ngIf="fifteenYear.invalid">{{getErrorMessage(fifteenYear)}}</mat-error>
+      </mat-form-field>
+      <mat-form-field appearance="fill" id="queryFifteen" class="queryFormField">
+        <mat-label>Date</mat-label>
+        <input matInput placeholder="2021-12-13" [formControl]="fifteenDate" required>
+        <mat-error *ngIf="fifteenDate.invalid">{{getErrorMessage(fifteenDate)}}</mat-error>
+      </mat-form-field>
+      <mat-form-field appearance="fill" id="queryFifteen" class="queryFormField">
+        <mat-label>Start Time</mat-label>
+        <input matInput placeholder="10:30:00" [formControl]="fifteenStartTime" required>
+        <mat-error *ngIf="fifteenStartTime.invalid">{{getErrorMessage(fifteenStartTime)}}</mat-error>
+      </mat-form-field>
+      <mat-form-field appearance="fill" id="queryFifteen" class="queryFormField">
+        <mat-label>End Time</mat-label>
+        <input matInput placeholder="11:10:00" [formControl]="fifteenEndTime" required>
+        <mat-error *ngIf="fifteenEndTime.invalid">{{getErrorMessage(fifteenEndTime)}}</mat-error>
+      </mat-form-field><br>
+      <button mat-raised-button color="primary" id="queryFifteenButton" (click)="queryFifteen()">Submit</button>
+      <p id="avaliableStudents" style="display: none; margin-top: 0.5rem;"><strong>Avaliable Students: {{fifteenAvaliableStudents}}</strong></p>
+    </div>
+    <div class="formContainer">
+      <div class="queryName" style="width: 100%;"><h2>On average, what time of day are more students attending study sessions?</h2></div>
+      <button mat-raised-button color="primary" id="querySixteenButton" (click)="querySixteen()">Run Query 16</button>
+      <p id="popularStartTime" style="display: none; margin-top: 0.5rem;"><strong>Most Popular Start Time: {{sixteenTimeOfDay}}</strong></p>
+    </div>
+    <div class="formContainer">
+      <div class="queryName" style="width: 100%;"><h2>When is the TA going to be grading assignment A</h2></div>
+      <mat-form-field appearance="fill" id="querySeventeen" class="queryFormField">
+        <mat-label>First Name</mat-label>
+        <input matInput placeholder="John" [formControl]="seventeenFirstName" required>
+        <mat-error *ngIf="seventeenFirstName.invalid">{{getErrorMessage(seventeenFirstName)}}</mat-error>
+      </mat-form-field>
+      <mat-form-field appearance="fill" id="queryTwelve" class="queryFormField">
+        <mat-label>Last Name</mat-label>
+        <input matInput placeholder="Doe" [formControl]="seventeenLastName" required>
+        <mat-error *ngIf="seventeenLastName.invalid">{{getErrorMessage(seventeenLastName)}}</mat-error>
+      </mat-form-field>
+      <mat-form-field appearance="fill" id="queryTwelve" class="queryFormField">
+        <mat-label>Assignment ID</mat-label>
+        <input matInput placeholder="001" [formControl]="seventeenAssignment" required>
+        <mat-error *ngIf="seventeenAssignment.invalid">{{getErrorMessage(seventeenAssignment)}}</mat-error>
+      </mat-form-field><br>
+      <button mat-raised-button color="primary" id="querySeventeenButton" (click)="querySeventeen()">Submit</button>
+      <div style="width: 100%; display: flex; flex-wrap: wrap;"><div *ngFor="let grading of seventeenResults" style="width: 50%; margin-top: 1.5rem;">
+        <p>Date: {{grading.date}}</p>
+        <p>Time: {{grading.start_time}}-{{grading.end_time}}</p>
+      </div></div>
+    </div>
+    <div class="formContainer">
+      <div class="queryName" style="width: 100%;"><h2>What is the student to TA ration per course?</h2></div>
+      <button mat-raised-button color="primary" id="queryEighteenButton" (click)="queryEighteen()">Run Query 18</button>
+      <div style="width: 100%; display: flex; flex-wrap: wrap;"><div *ngFor="let course of eighteenResults" style="width: 50%; margin-top: 1.5rem;">
+        <p>Course: {{course.course_id}}</p>
+        <p>Date: {{course.section_id}}</p>
+        <p>Due Date: {{course.semester}}</p>
+        <p>Time: {{course.year}}</p>
+        <p>Student to TA ratio: {{course.student_to_ta_ratio}}</p>
+      </div></div>
+    </div>
+    <div class="formContainer">
+      <div class="queryName" style="width: 100%;"><h2>When is the next Study Session?</h2></div>
+      <button mat-raised-button color="primary" id="queryTwentyButton" (click)="queryTwenty()">Run Query 20</button>
+      <div style="width: 100%; display: flex; flex-wrap: wrap;"><div *ngFor="let studySession of twentyResults" style="width: 50%; margin-top: 1.5rem;">
+        <p>Course: {{studySession.course_name}}</p>
+        <p>Date: {{studySession.date}}</p>
+        <p>Due Date: {{studySession.location}}</p>
+        <p>Time: {{studySession.start_time}}-{{studySession.end_time}}</p>
+      </div></div>
+    </div>
+  </div>
+  </mat-tab>
+</mat-tab-group>
+

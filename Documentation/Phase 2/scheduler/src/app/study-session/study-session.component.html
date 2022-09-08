@@ -1,0 +1,114 @@
+<p>
+  <mat-toolbar color="primary">
+    <button mat-icon-button class="example-icon" [matMenuTriggerFor]="menu" aria-label="Example icon-button with menu icon">
+      <mat-icon>menu</mat-icon>
+    </button>
+    <mat-menu #menu="matMenu">
+      <div *ngIf="teacher == false"><button mat-menu-item id="student"><a [routerLink]="['/information']" class="navlinks">Course Information</a></button></div>
+      <div *ngIf="!student || ta"><button mat-menu-item id="teacher"><a [routerLink]="['/teacherInformation']" class="navlinks">Teacher Information</a></button></div>
+      <div *ngIf="ta == true"><button mat-menu-item id="student"><a [routerLink]="['/information']" class="navlinks">Course Information</a></button></div>
+      <button mat-menu-item><a [routerLink]="['/schedule']" class="navlinks">Schedule</a></button>
+      <button mat-menu-item><a [routerLink]="['']" class="navlinks">Sign Out</a></button>
+    </mat-menu>
+    <span><a [routerLink]="['/schedule']" class="navlinks" id="scheduler">Scheduler</a></span>
+    <span class="example-spacer"></span>
+  </mat-toolbar>
+</p>
+
+<div class="title"><h1 class="upcomingss">Study Sessions</h1></div>
+<mat-tab-group class="tabs" color="accent" backgroundColor="primary">
+  <mat-tab label="Employee Overview" *ngIf="!student || ta">
+    <table mat-table
+          [dataSource]="dataSource" multiTemplateDataRows
+          class="mat-elevation-z8" id="sstable">
+          <ng-container matColumnDef="{{column}}" *ngFor="let column of columnsToDisplay">
+            <th mat-header-cell *matHeaderCellDef> {{column}} </th>
+            <td mat-cell *matCellDef="let element"> <b>{{element[column]}}</b> </td>
+          </ng-container>
+
+          <!-- Expanded Content Column - The detail row is made up of this one column that spans across all columns -->
+          <ng-container matColumnDef="expandedDetail">
+            <td mat-cell *matCellDef="let element" [attr.colspan]="columnsToDisplay.length">
+              <div class="example-element-detail"
+                  [@detailExpand]="element == expandedElement ? 'expanded' : 'collapsed'">
+                <!-- <div class=study_session_title><h2>Study Session(s)</h2></div><br> -->
+                <div class="classInfo">
+                  <div class="sessionInfo" *ngFor="let ta of element.taName; let i=index">
+                      <h4><small>TA Lead:</small> {{ta}}</h4>
+                      <h4><small>Date:</small> {{element.date[i]}}</h4>
+                      <h4><small>Time:</small> {{element.time[i]}}</h4>
+                      <h4><small>Location:</small> {{element.location[i]}}</h4>
+                  </div>
+                </div>
+              </div>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="columnsToDisplay"></tr>
+          <tr mat-row *matRowDef="let element; columns: columnsToDisplay;"
+            class="example-element-row"
+            [class.example-expanded-row]="expandedElement === element"
+            (click)="expandedElement = expandedElement === element ? null : element">
+          </tr>
+          <tr mat-row *matRowDef="let row; columns: ['expandedDetail']" class="example-detail-row"></tr>
+    </table><br>
+    <div *ngIf="!student || ta" class="addSS">
+      <div class="assignmentForm" id="formSS">
+        <button style="float:right;" id="exitSS" (click)="exitAddStudySession()">x</button><br>
+        <div style="display: flex;">
+          <div class="aFormDiv"><p class="assignmentPara">Course:</p>
+          <input matInput placeholder="CMSC255" [formControl]="course" required></div>
+          <div class="aFormDiv"><p class="assignmentPara">TA Lead:</p>
+          <input matInput placeholder="John Smith-smithj@vcu.edu" [formControl]="taLeader" required></div>
+          <div class="aFormDiv"><p class="assignmentPara">Date:</p>
+          <input matInput placeholder="YYYY-MM-DD" [formControl]="ss_date" required></div>
+          <div class="aFormDiv"><p class="assignmentPara">Time:</p>
+          <input matInput placeholder="12:30:00-13:30:00" [formControl]="ss_time" required></div>
+          <div class="aFormDiv"><p class="assignmentPara">Location:</p>
+          <input matInput placeholder="zoom online" [formControl]="ss_location" required></div>
+          <button mat-raised-button color="primary" class="addAssignment" (click)="addStudySession()">Submit</button>
+          <button mat-raised-button color="primary" class="addAssignment" (click)="deleteStudySession()">Remove</button>
+        </div>
+        <p style="color: red; display: none;" id="warningSS">The inputs are not valid.</p>
+        <p style="color: red; display: none;" id="warningDeleteSS">The inputs do not match a current study session.</p>
+      </div>
+      <button mat-raised-button color="primary" class="addSSButton" (click)="displayAddStudySession()" id="addssButton">Add Study Session</button>
+    </div>
+  </mat-tab>
+  <mat-tab label="Student Courses" *ngIf="student == true">
+    <table mat-table
+          [dataSource]="dataSourceStudent" #student multiTemplateDataRows
+          class="mat-elevation-z8" id="sstable">
+          <ng-container matColumnDef="{{column}}" *ngFor="let column of columnsToDisplay">
+            <th mat-header-cell *matHeaderCellDef> {{column}} </th>
+            <td mat-cell *matCellDef="let element"> <b>{{element[column]}}</b> </td>
+          </ng-container>
+
+          <!-- Expanded Content Column - The detail row is made up of this one column that spans across all columns -->
+          <ng-container matColumnDef="expandedDetail">
+            <td mat-cell *matCellDef="let element" [attr.colspan]="columnsToDisplay.length">
+              <div class="example-element-detail"
+                  [@detailExpand]="element == expandedElement ? 'expanded' : 'collapsed'">
+                <!-- <div class=study_session_title><h2>Study Session(s)</h2></div><br> -->
+                <div class="classInfo">
+                  <div class="sessionInfo" *ngFor="let ta of element.taName; let i=index">
+                      <h4><small>TA Lead:</small> {{ta}}</h4>
+                      <h4><small>Date:</small> {{element.date[i]}}</h4>
+                      <h4><small>Time:</small> {{element.time[i]}}</h4>
+                      <h4><small>Location:</small> {{element.location[i]}}</h4>
+                  </div>
+                </div>
+              </div>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="columnsToDisplay"></tr>
+          <tr mat-row *matRowDef="let element; columns: columnsToDisplay;"
+            class="example-element-row"
+            [class.example-expanded-row]="expandedElement === element"
+            (click)="expandedElement = expandedElement === element ? null : element">
+          </tr>
+          <tr mat-row *matRowDef="let row; columns: ['expandedDetail']" class="example-detail-row"></tr>
+    </table><br>
+  </mat-tab>
+</mat-tab-group>
